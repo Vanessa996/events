@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin
 @RestController
 public class TeacherResource {
 
@@ -21,7 +21,7 @@ public class TeacherResource {
         this.teacherService = teacherService;
     }
 
-    @GetMapping("/teacher/events")
+    @GetMapping("/teacher")
     public List<Teacher> getTeachers(){
         return teacherService.getAllTeachers();
     }
@@ -32,19 +32,23 @@ public class TeacherResource {
         teacherService.addTeacher(name);
     }
 
-    @PostMapping("/teacher/events/add")
-    public void addNewEventToTeacher(@RequestParam int teacher_id, @RequestParam int event_id){
+    @PostMapping("/teacher/{teacher_id}/events/add/{event_id}")
+    public void addNewEventToTeacher(@PathVariable("teacher_id") int teacher_id, @PathVariable("event_id") int event_id){
         teacherService.addEventToTeacher(teacher_id, event_id);
     }
 
-    @DeleteMapping("/teacher/events/remove")
-    public void deleteEventFromTeacher(@RequestParam int teacher_id, @RequestParam int event_id){
+    @DeleteMapping("/teacher/{teacher_id}/events/remove/{event_id}")
+    public void deleteEventFromTeacher(@PathVariable("teacher_id") int teacher_id, @PathVariable("event_id") int event_id){
         teacherService.removeEventFromTeacher(teacher_id, event_id);
     }
 
-    @GetMapping("/teacher/events/{id}")
+    @GetMapping("/teacher/{id}/events")
     public List<Event> getEventsForTeacher(@PathVariable("id") int teacher_id){
         return teacherService.getAllEventsByTeacherID(teacher_id);
     }
 
+    @DeleteMapping("/teacher/delete/{id}")
+    public void deleteTeacherById(@PathVariable("id") int teacher_id){
+        teacherService.removeTeacher(teacher_id);
+    }
 }

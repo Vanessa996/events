@@ -51,6 +51,11 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
+    public void removeTeacher(int teacher_id) throws TeacherNotFoundException {
+        teacherRepository.deleteById(teacher_id);
+    }
+
+    @Override
     public List<Event> getAllEventsByTeacherID(int teacher_id) throws TeacherNotFoundException{
         Teacher teacher = teacherRepository.findById(teacher_id).orElseThrow(TeacherNotFoundException::new);
         return teacher.getEvents();

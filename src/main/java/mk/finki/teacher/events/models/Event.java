@@ -17,22 +17,23 @@ public class Event {
     @Column(name = "name")
     private String eventName;
 
-    @Column(name = "from")
+    @Column(name = "event_from")
     private LocalDateTime eventDateFrom;
 
-    @Column(name = "to")
+    @Column(name = "event_to")
     private LocalDateTime eventDateTo;
 
     @Column(name = "location")
     private String location;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private EventType eventType;
 
     public Event(){
     }
 
-    public Event(String eventName,  LocalDateTime eventDateFrom, LocalDateTime eventDateTo, String location, EventType eventType) {
+    public Event(String eventName, LocalDateTime eventDateFrom, LocalDateTime eventDateTo, String location, EventType eventType) {
         this.eventName = eventName;
         this.eventDateFrom = eventDateFrom;
         this.eventDateTo = eventDateTo;

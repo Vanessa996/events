@@ -13,6 +13,7 @@ public interface TeacherService {
     void addTeacher(String fullName) throws DuplicateTeacherException;
     void addEventToTeacher(int teacher_id, int event_id) throws TeacherNotFoundException, EventNotFoundException;
     void removeEventFromTeacher(int teacher_id, int event_id) throws TeacherNotFoundException, EventNotFoundException;
+    void removeTeacher(int teacher_id) throws TeacherNotFoundException;
     List<Event> getAllEventsByTeacherID(int teacher_id) throws TeacherNotFoundException;
     List<Teacher> getAllTeachers();
 }

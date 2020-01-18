@@ -9,6 +9,7 @@ import mk.finki.teacher.events.repository.EventRepository;
 import mk.finki.teacher.events.services.EventService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -43,5 +44,10 @@ public class EventServiceImpl implements EventService {
     public void removeEvent(int event_id) throws EventNotFoundException{
         Event event = eventRepository.findById(event_id).orElseThrow(EventNotFoundException::new);
         eventRepository.delete(event);
+    }
+
+    @Override
+    public List<Event> listAllEvents() {
+        return eventRepository.findAll();
     }
 }
