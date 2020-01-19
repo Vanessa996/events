@@ -28,12 +28,29 @@ class Teacher extends Component {
         axios.get("http://localhost:8080/teacher/"+id+"/events")
             .then(e => {
                 const events = e.data;
-                this.setState({events: events, eventsEmpty: false});
+                this.isEmpty(events);
+                this.setState({events: events});
             });
-    }
+    };
+
+    isEmpty = (e) => {
+        console.log(e)
+        if(e.length === 0){
+            this.setState({eventsEmpty: true})
+        }
+        else{
+            this.setState({eventsEmpty: false})
+        }
+    };
+
+    changeActiveTeacher = (activeEvents) => {
+        this.setState({activeEvents})
+        this.getEvents(activeEvents)
+    };
 
 
     render(){
+        console.log(this.state.activeEvents)
         return<div className={"col-lg-12 "}>
             <div className={"text-center mb-4"}><Button basic color='green' content='Insert a Teacher'/></div>
             <div className={"col-lg-3 float-left"}>
@@ -46,11 +63,23 @@ class Teacher extends Component {
 
                     <Table.Body>
                         {
-                            this.state.teachers.map((t) => (
-                                <Table.Row key={t.teacher_id}>
-                                    <Table.Cell>{t.fullName}</Table.Cell>
-                                </Table.Row>
-                            ))
+                            this.state.teachers.map((t) => {
+                                if(t.teacher_id === this.state.activeEvents)
+                                return(
+                                    <Table.Row key={t.teacher_id}
+                                               className={"table-success"}
+                                                onClick={() => this.changeActiveTeacher(t.teacher_id)}>
+                                        <Table.Cell>{t.fullName}</Table.Cell>
+                                    </Table.Row>
+                                )
+                                else
+                                    return(
+                                        <Table.Row key={t.teacher_id}
+                                                   onClick={() => this.changeActiveTeacher(t.teacher_id)}>
+                                            <Table.Cell>{t.fullName}</Table.Cell>
+                                        </Table.Row>
+                                    )
+                            })
                         }
                     </Table.Body>
                 </Table>

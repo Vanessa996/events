@@ -9,6 +9,7 @@ import mk.finki.teacher.events.repository.EventRepository;
 import mk.finki.teacher.events.services.EventService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service

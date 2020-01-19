@@ -2,6 +2,8 @@ package mk.finki.teacher.events.web;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import mk.finki.teacher.events.exceptions.InvalidEventTypeException;
 import mk.finki.teacher.events.models.Event;
 import mk.finki.teacher.events.models.enums.EventType;
 import mk.finki.teacher.events.services.EventService;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin
 @RestController
 public class EventResource {
 
@@ -30,14 +32,14 @@ public class EventResource {
 
     @PostMapping(value = "/events/add", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addEvent(@RequestBody Map<String,String> body){
+    public void addEvent(@RequestBody Map<String,String> body) throws InvalidEventTypeException {
 
         EventType type = null;
         switch (body.get("eventType")){
             case "Conference": type = EventType.CONFERENCE; break;
             case "Event": type = EventType.EVENT; break;
             case "Jury": type = EventType.JURY; break;
-            default: break;
+            default: throw new InvalidEventTypeException();
         }
 
         eventService.createEvent(
