@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Table} from 'semantic-ui-react'
+import {Button, Table} from 'semantic-ui-react'
 import axios from 'axios';
 
 class Teacher extends Component {
@@ -7,7 +7,8 @@ class Teacher extends Component {
     state = {
         teachers: [],
         events: [],
-        activeEvents: 0
+        activeEvents: 0,
+        eventsEmpty: true
     };
 
     componentDidMount() {
@@ -27,14 +28,14 @@ class Teacher extends Component {
         axios.get("http://localhost:8080/teacher/"+id+"/events")
             .then(e => {
                 const events = e.data;
-                this.setState({events});
+                this.setState({events: events, eventsEmpty: false});
             });
     }
 
 
     render(){
-
         return<div className={"col-lg-12 "}>
+            <div className={"text-center mb-4"}><Button basic color='green' content='Insert a Teacher'/></div>
             <div className={"col-lg-3 float-left"}>
                 <Table color={"green"} selectable>
                     <Table.Header>
@@ -55,7 +56,8 @@ class Teacher extends Component {
                 </Table>
             </div>
             <div className={"col-lg-8 float-right"}>
-                <Table color={"green"} selectable>
+                {!this.state.eventsEmpty &&
+                <Table color={"green"}>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Name</Table.HeaderCell>
@@ -80,6 +82,10 @@ class Teacher extends Component {
                         }
                     </Table.Body>
                 </Table>
+                }
+                {this.state.eventsEmpty &&
+                <h2>There are no upcoming events.</h2>
+                }
             </div>
         </div>
     }
