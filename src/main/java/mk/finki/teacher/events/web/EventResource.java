@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@CrossOrigin
+@CrossOrigin("http://localhost:3000")
 @RestController
 public class EventResource {
 
