@@ -15,10 +15,24 @@ const panes = [
     }
 ];
 
-const App = () =>   <div className={"col-lg-12 mt-4 mx-auto"}>
-                        <Tab panes={panes}
-                             menu={{ fluid: true, vertical: true }}
-                             menuPosition='right' />
-                    </div>;
+class App extends React.Component{
 
+    componentDidMount(){
+        if(sessionStorage.getItem("activeIndex") === null){
+            sessionStorage.setItem("activeIndex", '0')
+        }
+        console.log("active", sessionStorage.getItem("activeIndex"));
+    }
+
+    render(){
+        return (
+            <div className={"col-lg-12 mt-4 mx-auto"}>
+                <Tab panes={panes}
+                     menu={{ fluid: true, vertical: true }}
+                     menuPosition='right'
+                     defaultActiveIndex={sessionStorage.getItem("activeIndex")}/>
+            </div>
+        )
+    }
+}
 export default App;

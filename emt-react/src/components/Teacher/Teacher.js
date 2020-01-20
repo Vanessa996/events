@@ -5,6 +5,7 @@ import axios from 'axios';
 class Teacher extends Component {
 
     state = {
+        index: 0,
         teachers: [],
         events: [],
         activeEvents: 0,
@@ -12,6 +13,7 @@ class Teacher extends Component {
     };
 
     componentDidMount() {
+        sessionStorage.setItem("activeIndex", this.state.index);
         axios.get(`http://localhost:8080/teacher`)
             .then(t => {
                 const teachers = t.data;
