@@ -1,7 +1,9 @@
 package mk.finki.teacher.events.web;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import mk.finki.teacher.events.models.Event;
 import mk.finki.teacher.events.models.Teacher;
@@ -43,7 +45,7 @@ public class TeacherResource {
     }
 
     @GetMapping("/teacher/{id}/events")
-    public List<Event> getEventsForTeacher(@PathVariable("id") int teacher_id){
+    public Collection<Event> getEventsForTeacher(@PathVariable("id") int teacher_id){
         return teacherService.getAllEventsByTeacherID(teacher_id);
     }
 

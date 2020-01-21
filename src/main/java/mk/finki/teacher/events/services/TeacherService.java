@@ -1,6 +1,8 @@
 package mk.finki.teacher.events.services;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import mk.finki.teacher.events.exceptions.DuplicateTeacherException;
 import mk.finki.teacher.events.exceptions.EventNotFoundException;

@@ -16,13 +16,16 @@ class Teacher extends Component {
         sessionStorage.setItem("activeIndex", this.state.index);
         axios.get(`http://localhost:8080/teacher`)
             .then(t => {
-                const teachers = t.data;
-                const id = teachers[0].teacher_id
-                this.getEvents(id)
-                this.setState({
-                    teachers: teachers,
-                    activeEvents: id
-                });
+                console.log("data", t.data.length)
+                if(t.data.length !== 0) {
+                    const teachers = t.data;
+                    const id = teachers[0].teacher_id;
+                    this.getEvents(id)
+                    this.setState({
+                        teachers: teachers,
+                        activeEvents: id
+                    });
+                }
             });
     }
 

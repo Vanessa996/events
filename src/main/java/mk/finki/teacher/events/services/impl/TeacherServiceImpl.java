@@ -10,7 +10,9 @@ import mk.finki.teacher.events.repository.TeacherRepository;
 import mk.finki.teacher.events.services.TeacherService;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -52,6 +54,10 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void removeTeacher(int teacher_id) throws TeacherNotFoundException {
+        Teacher teacher = teacherRepository.findById(teacher_id).orElseThrow(TeacherNotFoundException::new);
+        for(Event e : teacher.getEvents()){
+            removeEventFromTeacher(teacher_id, e.getEvent_id());
+        }
         teacherRepository.deleteById(teacher_id);
     }
 

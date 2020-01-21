@@ -44,8 +44,8 @@ public class EventResource {
 
         eventService.createEvent(
                 body.get("eventName"),
-                LocalDateTime.parse(body.get("eventDateFrom"), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
-                LocalDateTime.parse(body.get("eventDateTo"), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
+                LocalDateTime.parse(body.get("eventDateFrom"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                LocalDateTime.parse(body.get("eventDateTo"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 body.get("location"),
                 type
         );

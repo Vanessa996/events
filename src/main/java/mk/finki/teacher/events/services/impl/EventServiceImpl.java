@@ -4,21 +4,25 @@ import mk.finki.teacher.events.exceptions.DuplicateEventException;
 import mk.finki.teacher.events.exceptions.EventNotFoundException;
 import mk.finki.teacher.events.exceptions.InvalidDatesException;
 import mk.finki.teacher.events.models.Event;
+import mk.finki.teacher.events.models.Teacher;
 import mk.finki.teacher.events.models.enums.EventType;
 import mk.finki.teacher.events.repository.EventRepository;
+import mk.finki.teacher.events.repository.TeacherRepository;
 import mk.finki.teacher.events.services.EventService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 
 @Service
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final TeacherRepository teacherRepository;
 
-    public EventServiceImpl(EventRepository eventRepository) {
+    public EventServiceImpl(EventRepository eventRepository, TeacherRepository teacherRepository) {
         this.eventRepository = eventRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     @Override
@@ -44,6 +48,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public void removeEvent(int event_id) throws EventNotFoundException{
         Event event = eventRepository.findById(event_id).orElseThrow(EventNotFoundException::new);
+        for(Teacher t : teacherRepository.findAll()){
+            List<Event> events = t.getEvents();
+            if(events.contains(event)) {
+                events.remove(event);
+                teacherRepository.save(t);
+            }
+        }
         eventRepository.delete(event);
     }
 
