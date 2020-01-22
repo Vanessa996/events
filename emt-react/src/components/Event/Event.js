@@ -2,8 +2,6 @@ import React, {Component} from 'react'
 import {Button, Icon, Table, Form, Dropdown} from 'semantic-ui-react'
 import {Modal} from 'react-bootstrap'
 import axios from 'axios';
-import CancelEvent from "./CancelEvent/CancelEvent";
-
 
 const eventTypeOptions = [
     { key: 0, value: 'Conference', text: 'Conference' },
@@ -16,6 +14,7 @@ class Event extends Component {
     state = {
         index: 1,
         events: [],
+        hasEventsFlag: false,
         name: "",
         dateFrom: null,
         dateTo: null,
@@ -33,9 +32,11 @@ class Event extends Component {
         axios.get(`http://localhost:8080/events`)
             .then(e => {
                 const events = e.data;
-                this.setState({
-                    events
-                });
+                if(events.length !== 0)
+                    this.setState({
+                        events,
+                        hasEventsFlag: true
+                    });
             });
     }
 
@@ -76,8 +77,9 @@ class Event extends Component {
             eventDateTo: this.state.dateTo,
             location: this.state.location,
             eventType: this.state.type
-        }).then(this.handleInsertClose);
-        window.location.reload()
+        }).then(this.handleInsertClose)
+            .then(r => window.location.reload());
+
     };
 
     handleCancelOpen = (e) => this.setState({ cancelModalFlag: true, deleteEventID: e });
@@ -89,8 +91,8 @@ class Event extends Component {
         axios.delete('http://localhost:8080/events/delete/'+e)
             .then(this.handleCancelClose)
         axios.delete('http://localhost:8080/events/delete/'+e)
-            .then(this.handleCancelClose)
-        //window.location.reload()
+            .then(this.handleCancelClose).then(r => window.location.reload())
+
     };
 
     render(){
@@ -174,7 +176,7 @@ class Event extends Component {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
+            { this.state.hasEventsFlag &&
             <Table color={"green"} selectable>
                 <Table.Header>
                     <Table.Row>
@@ -240,6 +242,11 @@ class Event extends Component {
                     </Table.Row>*/}
                 </Table.Body>
             </Table>
+            }
+            {
+                !this.state.hasEventsFlag &&
+                <h2 className={"m-3"}>There are no upcoming events.</h2>
+            }
         </div>
     }
 }
