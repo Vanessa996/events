@@ -4,10 +4,7 @@ import mk.finki.teacher.events.models.enums.EventType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "event")
@@ -33,7 +30,6 @@ public class Event {
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private EventType eventType;
-
 
     public Event(){
     }

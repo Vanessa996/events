@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
-import {Button, Table, Input} from 'semantic-ui-react'
+import {Button, Table, Input, Form, Dropdown} from 'semantic-ui-react'
 import axios from 'axios';
+import {Modal} from "react-bootstrap";
 
 class Teacher extends Component {
 
@@ -9,7 +10,10 @@ class Teacher extends Component {
         teachers: [],
         events: [],
         name: "",
+        addModalFlag: false,
         currentTeacher: "",
+        allEvents: [],
+        teacherNewEvent: "",
         activeEvents: 0,
         hasTeachersFlag: false,
         eventsEmpty: true
@@ -19,7 +23,7 @@ class Teacher extends Component {
         sessionStorage.setItem("activeIndex", this.state.index);
         axios.get(`http://localhost:8080/teacher`)
             .then(t => {
-                console.log("data", t.data.length)
+                console.log("data", t.data);
                 if(t.data.length !== 0) {
                     const teachers = t.data;
                     const id = teachers[0].teacher_id;
@@ -34,6 +38,9 @@ class Teacher extends Component {
                     });
                 }
             });
+        axios.get("http://localhost:8080/events").then(r => {
+            this.setState({allEvents: r.data})
+        });
     }
 
     getEvents = (id) => {
@@ -66,24 +73,48 @@ class Teacher extends Component {
 
     createNewTeacher = () =>{
         console.log("teacher", this.state.name);
-        axios.get(`http://localhost:8080/teacher`)
-            .then(t => {
+        if(this.state.name !== "") {
+            axios.get(`http://localhost:8080/teacher`)
+                .then(t => {
                     const teachers = t.data;
                     let flag = false;
-                    for(let x = 0; x < teachers.length; x++){
-                        if(teachers[x].fullName === this.state.name){
+                    for (let x = 0; x < teachers.length; x++) {
+                        if (teachers[x].fullName === this.state.name) {
                             flag = true;
                             break;
                         }
                     }
-                    if(!flag){
+                    if (!flag) {
                         axios.post('http://localhost:8080/teacher/create?name=' + this.state.name).then(r => window.location.reload());
-                    }
-                    else{
+                    } else {
 
                     }
-            });
+                });
+        }
     };
+
+    updateNewEvent = (e, {value }) => {
+        console.log("type", value)
+        this.setState({teacherNewEvent: value})
+    };
+
+    handleAddOpen = () => this.setState({ addModalFlag: true });
+
+    handleAddClose = () => this.setState({ addModalFlag: false });
+
+    addAnEventToTeacher = (e) => {
+        console.log("potato", e)
+        axios.post('http://localhost:8080/teacher/'+this.state.activeEvents+'/events/add/'+e)
+            .then(this.handleAddClose)
+            .then(r => window.location.reload());
+    };
+
+    removeAnEventToTeacher = (e) => {
+        console.log("potato", e)
+        axios.delete('http://localhost:8080/teacher/'+this.state.activeEvents+'/events/remove/'+e)
+            .then(r => window.location.reload());
+    };
+
 
     render(){
         console.log(this.state.activeEvents)
@@ -132,6 +163,66 @@ class Teacher extends Component {
                         </Table>
                     </div>
                     <div className={"col-lg-8 float-right"}>
+
+                        <div className={"text-center mb-4 col-lg-12"}>
+                            <Button basic color='green'
+                                    content='Add new event'
+                                    onClick={this.handleAddOpen}
+                            />
+
+                            <Modal show={this.state.addModalFlag}
+                                   onHide={this.handleAddClose} centered>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Add an event to the teacher</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body className = {"m-3 col-lg-12 mx-auto"}>
+
+                                    <Table color={"green mx-auto text-center"} selectable>
+                                        <Table.Header>
+                                            <Table.Row>
+                                                <Table.HeaderCell>Name</Table.HeaderCell>
+                                                <Table.HeaderCell>From</Table.HeaderCell>
+                                                <Table.HeaderCell>To</Table.HeaderCell>
+                                                <Table.HeaderCell>Location</Table.HeaderCell>
+                                                <Table.HeaderCell>Type</Table.HeaderCell>
+                                                <Table.HeaderCell />
+                                            </Table.Row>
+                                        </Table.Header>
+
+                                        <Table.Body>
+                                            {
+                                                this.state.allEvents.map((e) => (
+
+                                                    <Table.Row key={e.event_id}>
+                                                        <Table.Cell>{e.eventName}</Table.Cell>
+                                                        <Table.Cell>{e.eventDateFrom}</Table.Cell>
+                                                        <Table.Cell>{e.eventDateTo}</Table.Cell>
+                                                        <Table.Cell>{e.location}</Table.Cell>
+                                                        <Table.Cell>{e.eventType}</Table.Cell>
+                                                        <Table.Cell>
+                                                            <Button icon={"plus"}
+                                                                    compact
+                                                                    basic
+                                                                    color='green'
+                                                                    onClick={() => this.addAnEventToTeacher(e.event_id)}/>
+
+                                                        </Table.Cell>
+                                                    </Table.Row>
+                                                ))
+                                            }
+
+                                        </Table.Body>
+                                    </Table>
+
+                                </Modal.Body>
+                                <Modal.Footer className={"mx-auto"}>
+                                    <Button variant="secondary" color={"green"} basic compact onClick={this.handleAddClose}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        </div>
+
                         {!this.state.eventsEmpty &&
                         <Table color={"green"}>
                             <Table.Header>
@@ -141,6 +232,7 @@ class Teacher extends Component {
                                     <Table.HeaderCell>To</Table.HeaderCell>
                                     <Table.HeaderCell>Location</Table.HeaderCell>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
+                                    <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
 
@@ -153,6 +245,13 @@ class Teacher extends Component {
                                             <Table.Cell>{e.eventDateTo}</Table.Cell>
                                             <Table.Cell>{e.location}</Table.Cell>
                                             <Table.Cell>{e.eventType}</Table.Cell>
+                                            <Table.Cell>
+                                                <Button icon={"delete"}
+                                                        compact
+                                                        basic
+                                                        color='green'
+                                                        onClick={() => this.removeAnEventToTeacher(e.event_id)}/>
+                                            </Table.Cell>
                                         </Table.Row>
                                     ))
                                 }

@@ -7,7 +7,7 @@ const eventTypeOptions = [
     { key: 0, value: 'Conference', text: 'Conference' },
     { key: 1, value: 'Event', text: 'Event' },
     { key: 2, value: 'Jury', text: 'Jury' },
-]
+];
 
 class Event extends Component {
 
@@ -245,7 +245,7 @@ class Event extends Component {
             }
             {
                 !this.state.hasEventsFlag &&
-                <h2 className={"m-3"}>There are no upcoming events.</h2>
+                <h2 className={"mx-auto m-3 text-center"}>There are no upcoming events.</h2>
             }
         </div>
     }
