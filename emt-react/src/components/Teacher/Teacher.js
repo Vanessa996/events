@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Button, Table, Input, Form, Dropdown} from 'semantic-ui-react'
+import {Button, Table, Input, Dimmer, Loader, Image, Segment} from 'semantic-ui-react'
 import axios from 'axios';
 import {Modal} from "react-bootstrap";
 
@@ -26,10 +26,21 @@ class Teacher extends Component {
                 console.log("data", t.data);
                 if(t.data.length !== 0) {
                     const teachers = t.data;
-                    const id = teachers[0].teacher_id;
-                    const currentTeacher = teachers[0].fullName;
-                    console.log("curr", currentTeacher)
-                    this.getEvents(id)
+                    let id;
+                    let currentTeacher;
+                    if(sessionStorage["activeEvents"] && sessionStorage["currentTeacher"]){
+                        id = sessionStorage.getItem("activeEvents");
+                        currentTeacher = sessionStorage.getItem("currentTeacher");
+                    }
+                    else{
+                        id = teachers[0].teacher_id;
+                        currentTeacher = teachers[0].fullName;
+                        sessionStorage.setItem("activeEvents", id);
+                        sessionStorage.setItem("currentTeacher", currentTeacher);
+                    }
+
+                    console.log("curr", currentTeacher);
+                    this.getEvents(id);
                     this.setState({
                         teachers,
                         activeEvents: id,
@@ -63,8 +74,11 @@ class Teacher extends Component {
     };
 
     changeActiveTeacher = (activeEvents, currentTeacher) => {
-        this.setState({activeEvents, currentTeacher})
-        this.getEvents(activeEvents)
+        this.setState({activeEvents, currentTeacher});
+        this.getEvents(activeEvents);
+        sessionStorage.setItem("activeEvents", activeEvents);
+        sessionStorage.setItem("currentTeacher", currentTeacher);
+        console.log("new aE", sessionStorage.getItem("activeEvents"));
     };
 
     updateTeacherName = (e) => {
@@ -93,11 +107,6 @@ class Teacher extends Component {
         }
     };
 
-    updateNewEvent = (e, {value }) => {
-        console.log("type", value)
-        this.setState({teacherNewEvent: value})
-    };
-
     handleAddOpen = () => this.setState({ addModalFlag: true });
 
     handleAddClose = () => this.setState({ addModalFlag: false });
@@ -117,19 +126,18 @@ class Teacher extends Component {
 
 
     render(){
-        console.log(this.state.activeEvents)
-        return <div className={"col-lg-12 "}>
+        if(sessionStorage["activeEvents"] && sessionStorage["currentTeacher"])
+            return (<div className={"col-lg-12 "}>
 
+                <div className={"text-center mb-4"}>
+                    <Input className={"mr-1"} onChange={this.updateTeacherName}/>
+                    <Button basic color='green'
+                            content='Insert'
+                            onClick={this.createNewTeacher}
+                    />
+                </div>
 
-            <div className={"text-center mb-4"}>
-                <Input className={"mr-1"} onChange={this.updateTeacherName}/>
-                <Button basic color='green'
-                        content='Insert'
-                        onClick={this.createNewTeacher}
-                />
-            </div>
-
-            {this.state.hasTeachersFlag &&
+                {this.state.hasTeachersFlag &&
                 <div className={"col-lg-12 "}>
                     <div className={"col-lg-3 float-left"}>
                         <Table color={"green"} selectable>
@@ -142,14 +150,14 @@ class Teacher extends Component {
                             <Table.Body>
                                 {
                                     this.state.teachers.map((t) => {
-                                        if (t.teacher_id === this.state.activeEvents)
+                                        if (t.teacher_id === JSON.parse(sessionStorage.getItem("activeEvents")))
                                             return (
                                                 <Table.Row key={t.teacher_id}
                                                            className={"table-success"}
                                                            onClick={() => this.changeActiveTeacher(t.teacher_id, t.fullName)}>
                                                     <Table.Cell>{t.fullName}</Table.Cell>
                                                 </Table.Row>
-                                            )
+                                            );
                                         else
                                             return (
                                                 <Table.Row key={t.teacher_id}
@@ -171,52 +179,60 @@ class Teacher extends Component {
                             />
 
                             <Modal show={this.state.addModalFlag}
+                                   className={"col-lg-12"}
                                    onHide={this.handleAddClose} centered>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Add an event to the teacher</Modal.Title>
                                 </Modal.Header>
-                                <Modal.Body className = {"m-3 col-lg-12 mx-auto"}>
+                                <Modal.Body className={"m-3 col-lg-12 mx-auto"}>
 
-                                    <Table color={"green mx-auto text-center"} selectable>
-                                        <Table.Header>
-                                            <Table.Row>
-                                                <Table.HeaderCell>Name</Table.HeaderCell>
-                                                <Table.HeaderCell>From</Table.HeaderCell>
-                                                <Table.HeaderCell>To</Table.HeaderCell>
-                                                <Table.HeaderCell>Location</Table.HeaderCell>
-                                                <Table.HeaderCell>Type</Table.HeaderCell>
-                                                <Table.HeaderCell />
-                                            </Table.Row>
-                                        </Table.Header>
+                                    {this.state.allEvents.length === this.state.events.length ?
+                                        <h2 className={"m-3"}>There are no other available events.</h2>
+                                        :
+                                        <Table color={"green"} className={"mx-auto text-center"} selectable>
+                                            <Table.Header>
+                                                <Table.Row>
+                                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                                    <Table.HeaderCell>From</Table.HeaderCell>
+                                                    <Table.HeaderCell>To</Table.HeaderCell>
+                                                    <Table.HeaderCell>Location</Table.HeaderCell>
+                                                    <Table.HeaderCell>Type</Table.HeaderCell>
+                                                    <Table.HeaderCell/>
+                                                </Table.Row>
+                                            </Table.Header>
 
-                                        <Table.Body>
-                                            {
-                                                this.state.allEvents.map((e) => (
+                                            <Table.Body>
+                                                {
+                                                    this.state.allEvents.map((e) => {
 
-                                                    <Table.Row key={e.event_id}>
-                                                        <Table.Cell>{e.eventName}</Table.Cell>
-                                                        <Table.Cell>{e.eventDateFrom}</Table.Cell>
-                                                        <Table.Cell>{e.eventDateTo}</Table.Cell>
-                                                        <Table.Cell>{e.location}</Table.Cell>
-                                                        <Table.Cell>{e.eventType}</Table.Cell>
-                                                        <Table.Cell>
-                                                            <Button icon={"plus"}
-                                                                    compact
-                                                                    basic
-                                                                    color='green'
-                                                                    onClick={() => this.addAnEventToTeacher(e.event_id)}/>
+                                                        if (!this.state.events.some((element) => element.event_id === e.event_id))
+                                                            return (
+                                                                <Table.Row key={e.event_id}>
+                                                                    <Table.Cell>{e.eventName}</Table.Cell>
+                                                                    <Table.Cell>{e.eventDateFrom}</Table.Cell>
+                                                                    <Table.Cell>{e.eventDateTo}</Table.Cell>
+                                                                    <Table.Cell>{e.location}</Table.Cell>
+                                                                    <Table.Cell>{e.eventType}</Table.Cell>
+                                                                    <Table.Cell>
+                                                                        <Button icon={"plus"}
+                                                                                compact
+                                                                                basic
+                                                                                color='green'
+                                                                                onClick={() => this.addAnEventToTeacher(e.event_id)}/>
 
-                                                        </Table.Cell>
-                                                    </Table.Row>
-                                                ))
-                                            }
+                                                                    </Table.Cell>
+                                                                </Table.Row>
+                                                            )
+                                                    })
+                                                }
 
-                                        </Table.Body>
-                                    </Table>
-
+                                            </Table.Body>
+                                        </Table>
+                                    }
                                 </Modal.Body>
                                 <Modal.Footer className={"mx-auto"}>
-                                    <Button variant="secondary" color={"green"} basic compact onClick={this.handleAddClose}>
+                                    <Button variant="secondary" color={"green"} basic compact
+                                            onClick={this.handleAddClose}>
                                         Close
                                     </Button>
                                 </Modal.Footer>
@@ -265,12 +281,20 @@ class Teacher extends Component {
                         }
                     </div>
                 </div>
-            }
+                }
 
-            {!this.state.hasTeachersFlag &&
-            <h2 className={"mx-auto m-3 text-center"}>There are no teachers.</h2>
-            }
-        </div>
+                {!this.state.hasTeachersFlag &&
+                <h2 className={"mx-auto m-3 text-center"}>There are no teachers.</h2>
+                }
+            </div>);
+        else
+            return(
+            <Segment>
+                <Dimmer active inverted>
+                    <Loader size='large'/>
+                </Dimmer>
+            </Segment>
+            )
     }
 }
 export default Teacher;
