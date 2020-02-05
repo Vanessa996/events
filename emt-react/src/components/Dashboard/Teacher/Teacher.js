@@ -16,11 +16,13 @@ class Teacher extends Component {
         teacherNewEvent: "",
         activeEvents: 0,
         hasTeachersFlag: false,
-        eventsEmpty: true
+        eventsEmpty: true,
+        defaultTeacher: this.props.schedule
     };
 
     componentDidMount() {
         sessionStorage.setItem("activeIndex", this.state.index);
+
         axios.get(`http://localhost:8080/teacher`)
             .then(t => {
                 console.log("data", t.data);
@@ -124,54 +126,75 @@ class Teacher extends Component {
             .then(r => window.location.reload());
     };
 
+    loginPage = () => {
+        window.location.replace("/schedule/login");
+    };
 
     render(){
-        if(sessionStorage["activeEvents"] && sessionStorage["currentTeacher"])
+      //  if(sessionStorage["activeEvents"] && sessionStorage["currentTeacher"])
             return (<div className={"col-lg-12 "}>
 
-                <div className={"text-center mb-4"}>
-                    <Input className={"mr-1"} onChange={this.updateTeacherName}/>
-                    <Button basic color='green'
-                            content='Insert'
-                            onClick={this.createNewTeacher}
-                    />
-                </div>
-
-                {this.state.hasTeachersFlag &&
-                <div className={"col-lg-12 "}>
-                    <div className={"col-lg-3 float-left"}>
-                        <Table color={"green"} selectable>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell>Teachers</Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-
-                            <Table.Body>
-                                {
-                                    this.state.teachers.map((t) => {
-                                        if (t.teacher_id === JSON.parse(sessionStorage.getItem("activeEvents")))
-                                            return (
-                                                <Table.Row key={t.teacher_id}
-                                                           className={"table-success"}
-                                                           onClick={() => this.changeActiveTeacher(t.teacher_id, t.fullName)}>
-                                                    <Table.Cell>{t.fullName}</Table.Cell>
-                                                </Table.Row>
-                                            );
-                                        else
-                                            return (
-                                                <Table.Row key={t.teacher_id}
-                                                           onClick={() => this.changeActiveTeacher(t.teacher_id, t.fullName)}>
-                                                    <Table.Cell>{t.fullName}</Table.Cell>
-                                                </Table.Row>
-                                            )
-                                    })
-                                }
-                            </Table.Body>
-                        </Table>
+                {
+                    this.state.defaultTeacher === "admin" &&
+                    <div className={"text-center mb-4"}>
+                        <Input className={"mr-1"} onChange={this.updateTeacherName}/>
+                        <Button basic color='green'
+                                content='Insert'
+                                onClick={this.createNewTeacher}
+                        />
                     </div>
+                }
+
+                {
+                    this.state.defaultTeacher === "default" &&
+                    <div className={"text-center"}>
+                        <Button circular color='green'
+                                content='Login'
+                                onClick={this.loginPage}
+                                className={"m-3"}
+                        />
+                    </div>
+                }
+
+                {this.state.hasTeachersFlag && this.state.defaultTeacher !== "teacher" &&
+                <div className={"col-lg-12 "}>
+                    { this.state.defaultTeacher !== "teacher" &&
+                        <div className={"col-lg-3 float-left"}>
+                            <Table color={"green"} selectable>
+                                <Table.Header>
+                                    <Table.Row>
+                                        <Table.HeaderCell>Teachers</Table.HeaderCell>
+                                    </Table.Row>
+                                </Table.Header>
+
+                                <Table.Body>
+                                    {
+                                        this.state.teachers.map((t) => {
+                                            if (t.teacher_id === JSON.parse(sessionStorage.getItem("activeEvents")))
+                                                return (
+                                                    <Table.Row key={t.teacher_id}
+                                                               className={"table-success"}
+                                                               onClick={() => this.changeActiveTeacher(t.teacher_id, t.fullName)}>
+                                                        <Table.Cell>{t.fullName}</Table.Cell>
+                                                    </Table.Row>
+                                                );
+                                            else
+                                                return (
+                                                    <Table.Row key={t.teacher_id}
+                                                               onClick={() => this.changeActiveTeacher(t.teacher_id, t.fullName)}>
+                                                        <Table.Cell>{t.fullName}</Table.Cell>
+                                                    </Table.Row>
+                                                )
+                                        })
+                                    }
+                                </Table.Body>
+                            </Table>
+                        </div>
+                    }
                     <div className={"col-lg-8 float-right"}>
 
+                        {
+                        !this.state.defaultTeacher &&
                         <div className={"text-center mb-4 col-lg-12"}>
                             <Button basic color='green'
                                     content='Add new event'
@@ -238,7 +261,7 @@ class Teacher extends Component {
                                 </Modal.Footer>
                             </Modal>
                         </div>
-
+                        }
                         {!this.state.eventsEmpty &&
                         <Table color={"green"}>
                             <Table.Header>
@@ -248,7 +271,7 @@ class Teacher extends Component {
                                     <Table.HeaderCell>To</Table.HeaderCell>
                                     <Table.HeaderCell>Location</Table.HeaderCell>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
-                                    <Table.HeaderCell/>
+                                    {!this.state.defaultTeacher && <Table.HeaderCell/>}
                                 </Table.Row>
                             </Table.Header>
 
@@ -261,6 +284,7 @@ class Teacher extends Component {
                                             <Table.Cell>{e.eventDateTo}</Table.Cell>
                                             <Table.Cell>{e.location}</Table.Cell>
                                             <Table.Cell>{e.eventType}</Table.Cell>
+                                            {!this.state.defaultTeacher &&
                                             <Table.Cell>
                                                 <Button icon={"delete"}
                                                         compact
@@ -268,6 +292,7 @@ class Teacher extends Component {
                                                         color='green'
                                                         onClick={() => this.removeAnEventToTeacher(e.event_id)}/>
                                             </Table.Cell>
+                                            }
                                         </Table.Row>
                                     ))
                                 }
@@ -283,18 +308,21 @@ class Teacher extends Component {
                 </div>
                 }
 
-                {!this.state.hasTeachersFlag &&
+                {!this.state.hasTeachersFlag && this.state.defaultTeacher !== "teacher" &&
                 <h2 className={"mx-auto m-3 text-center"}>There are no teachers.</h2>
                 }
             </div>);
-        else
+
+    }
+}
+export default Teacher;
+
+/*
+* else
             return(
             <Segment>
                 <Dimmer active inverted>
                     <Loader size='large'/>
                 </Dimmer>
             </Segment>
-            )
-    }
-}
-export default Teacher;
+            )*/

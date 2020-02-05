@@ -1,8 +1,12 @@
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import './App.css';
-import Event from "../Event/Event";
-import Teacher from "../Teacher/Teacher";
+import Event from "../Dashboard/Event/Event";
+import Teacher from "../Dashboard/Teacher/Teacher";
+import Login from "../Login/Login";
+import {Redirect, Route} from 'react-router-dom';
+import Dashboard from "../Dashboard/Dashboard";
+import Schedule from "../Schedule/Schedule";
 
 const panes = [
     {
@@ -17,20 +21,13 @@ const panes = [
 
 class App extends React.Component{
 
-    componentDidMount(){
-        if(sessionStorage.getItem("activeIndex") === null){
-            sessionStorage.setItem("activeIndex", '0')
-        }
-        console.log("active", sessionStorage.getItem("activeIndex"));
-    }
-
     render(){
         return (
-            <div className={"col-lg-12 mt-4 mx-auto"}>
-                <Tab panes={panes}
-                     menu={{ fluid: true, vertical: true }}
-                     menuPosition='right'
-                     defaultActiveIndex={sessionStorage.getItem("activeIndex")}/>
+            <div>
+                <Route exact path="/" render={() => (<Redirect to="/schedule" />)} />
+                <Route exact path='/schedule' component={Schedule} />
+                <Route exact path='/schedule/login' component={Login} />
+                <Route exact path='/schedule/dashboard' component={Dashboard} />
             </div>
         )
     }
