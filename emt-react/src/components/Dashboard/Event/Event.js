@@ -136,6 +136,7 @@ class Event extends Component {
 
             <div className={"text-center"}>
                 <Button basic
+                        circular
                         color='green'
                         content='Create an Event'
                         onClick={this.handleInsertOpen}/>
@@ -186,10 +187,19 @@ class Event extends Component {
                         </Form>
                     </Modal.Body>
                     <Modal.Footer className={"mx-auto"}>
-                        <Button variant="secondary" color={"red"} basic compact onClick={this.handleInsertClose}>
+                        <Button variant="secondary"
+                                color={"red"}
+                                basic
+                                compact
+                                circular
+                                onClick={this.handleInsertClose}>
                             Cancel
                         </Button>
-                        <Button variant="primary" color={"green"} basic compact onClick={this.insertEvent}>
+                        <Button variant="primary"
+                                color={"green"}
+                                circular
+                                compact
+                                onClick={this.insertEvent}>
                             Save
                         </Button>
                     </Modal.Footer>
@@ -310,6 +320,7 @@ class Event extends Component {
                                     <Button icon={"cancel"}
                                             compact
                                             basic
+                                            circular
                                             color='red'
                                             onClick={() => this.handleCancelOpen(e.event_id)}/>
 

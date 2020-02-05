@@ -138,7 +138,7 @@ class Teacher extends Component {
                     this.state.defaultTeacher === "admin" &&
                     <div className={"text-center mb-4"}>
                         <Input className={"mr-1"} onChange={this.updateTeacherName}/>
-                        <Button basic color='green'
+                        <Button  circular basic color='green'
                                 content='Insert'
                                 onClick={this.createNewTeacher}
                         />
@@ -196,7 +196,7 @@ class Teacher extends Component {
                         {
                         !this.state.defaultTeacher &&
                         <div className={"text-center mb-4 col-lg-12"}>
-                            <Button basic color='green'
+                            <Button circular basic color='green'
                                     content='Add new event'
                                     onClick={this.handleAddOpen}
                             />
@@ -254,7 +254,9 @@ class Teacher extends Component {
                                     }
                                 </Modal.Body>
                                 <Modal.Footer className={"mx-auto"}>
-                                    <Button variant="secondary" color={"green"} basic compact
+                                    <Button variant="secondary"
+                                            color={"green"} basic compact
+                                            circular
                                             onClick={this.handleAddClose}>
                                         Close
                                     </Button>
@@ -289,6 +291,7 @@ class Teacher extends Component {
                                                 <Button icon={"delete"}
                                                         compact
                                                         basic
+                                                        circular
                                                         color='green'
                                                         onClick={() => this.removeAnEventToTeacher(e.event_id)}/>
                                             </Table.Cell>
