@@ -181,7 +181,6 @@ class Event extends Component {
                                 <label>Start Date</label>
                                 <input name='dateFrom'
                                        type="datetime-local"
-                                       defaultValue={this.state.dateFrom}
                                        onChange={(e) => this.updateDateFrom(e)}/>
                             </Form.Field>
 
@@ -189,7 +188,6 @@ class Event extends Component {
                                 <label>End Date</label>
                                 <input name='dateTo'
                                        type="datetime-local"
-                                       defaultValue={this.state.dateTo}
                                        onChange={(e) => this.updateDateTo(e)}/>
                             </Form.Field>
                             <Form.Field>
@@ -252,7 +250,7 @@ class Event extends Component {
                                 <label>Start Date</label>
                                 <input name='dateFrom'
                                        type="datetime-local"
-
+                                       defaultValue={this.state.dateFrom}
                                        onChange={(e) => this.updateDateFrom(e)}/>
                             </Form.Field>
                             <Form.Field>
@@ -344,6 +342,7 @@ class Event extends Component {
                                     <Button icon={"edit"}
                                             compact
                                             basic
+                                            circular
                                             color='orange'
                                             onClick={() => this.handleEditOpen(e)}/>
 

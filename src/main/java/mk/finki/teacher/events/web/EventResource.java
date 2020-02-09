@@ -57,8 +57,8 @@ public class EventResource {
         eventService.updateEvent(
                 Integer.parseInt(body.get("event_id")),
                 body.get("eventName"),
-                LocalDateTime.parse(body.get("eventDateFrom"), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
-                LocalDateTime.parse(body.get("eventDateTo"), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
+                LocalDateTime.parse(body.get("eventDateFrom")),
+                LocalDateTime.parse(body.get("eventDateTo")),
                 body.get("location")
         );
     }
