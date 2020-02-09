@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
-import {Button, Table, Input, Dimmer, Loader, Image, Segment} from 'semantic-ui-react'
+import {Button, Table, Input} from 'semantic-ui-react'
 import axios from 'axios';
 import {Modal} from "react-bootstrap";
+import { format } from "date-fns";
 
 class Teacher extends Component {
 
@@ -232,8 +233,26 @@ class Teacher extends Component {
                                                             return (
                                                                 <Table.Row key={e.event_id}>
                                                                     <Table.Cell>{e.eventName}</Table.Cell>
-                                                                    <Table.Cell>{e.eventDateFrom}</Table.Cell>
-                                                                    <Table.Cell>{e.eventDateTo}</Table.Cell>
+                                                                    <Table.Cell>
+                                                                        {
+                                                                            new Date(Date.UTC(
+                                                                                e.eventDateFrom[0],
+                                                                                e.eventDateFrom[1]-1,
+                                                                                e.eventDateFrom[2],
+                                                                                e.eventDateFrom[3],
+                                                                                e.eventDateFrom[4])).toUTCString()
+                                                                        }
+                                                                    </Table.Cell>
+                                                                    <Table.Cell>
+                                                                        {
+                                                                            new Date(Date.UTC(
+                                                                                e.eventDateTo[0],
+                                                                                e.eventDateTo[1]-1,
+                                                                                e.eventDateTo[2],
+                                                                                e.eventDateTo[3],
+                                                                                e.eventDateTo[4])).toUTCString()
+                                                                        }
+                                                                    </Table.Cell>
                                                                     <Table.Cell>{e.location}</Table.Cell>
                                                                     <Table.Cell>{e.eventType}</Table.Cell>
                                                                     <Table.Cell>
@@ -282,8 +301,26 @@ class Teacher extends Component {
                                     this.state.events.map((e) => (
                                         <Table.Row key={e.event_id}>
                                             <Table.Cell>{e.eventName}</Table.Cell>
-                                            <Table.Cell>{e.eventDateFrom}</Table.Cell>
-                                            <Table.Cell>{e.eventDateTo}</Table.Cell>
+                                            <Table.Cell>
+                                                {
+                                                    new Date(Date.UTC(
+                                                        e.eventDateFrom[0],
+                                                        e.eventDateFrom[1]-1,
+                                                        e.eventDateFrom[2],
+                                                        e.eventDateFrom[3],
+                                                        e.eventDateFrom[4])).toUTCString()
+                                                }
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {
+                                                    new Date(Date.UTC(
+                                                        e.eventDateTo[0],
+                                                        e.eventDateTo[1]-1,
+                                                        e.eventDateTo[2],
+                                                        e.eventDateTo[3],
+                                                        e.eventDateTo[4])).toUTCString()
+                                                }
+                                            </Table.Cell>
                                             <Table.Cell>{e.location}</Table.Cell>
                                             <Table.Cell>{e.eventType}</Table.Cell>
                                             {!this.state.defaultTeacher &&

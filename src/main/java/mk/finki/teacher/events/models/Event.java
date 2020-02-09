@@ -31,6 +31,7 @@ public class Event {
     @Column(name = "type")
     private EventType eventType;
 
+
     public Event(){
     }
 

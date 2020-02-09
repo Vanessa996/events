@@ -90,11 +90,22 @@ class Event extends Component {
         editModalFlag: true,
         eventIndex: e.event_id,
         name: e.eventName,
-        dateFrom: e.eventDateFrom,
-        dateTo: e.eventDateTo,
+        dateFrom: new Date(Date.UTC(
+            e.eventDateFrom[0],
+            e.eventDateFrom[1]-1,
+            e.eventDateFrom[2],
+            e.eventDateFrom[3],
+            e.eventDateFrom[4])).toISOString().substring(0, 16),
+        dateTo: new Date(Date.UTC(
+            e.eventDateTo[0],
+            e.eventDateTo[1]-1,
+            e.eventDateTo[2],
+            e.eventDateTo[3],
+            e.eventDateTo[4])).toISOString().substring(0, 16),
         location: e.location,
         type: e.eventType
     });
+
 
     handleEditClose = () => this.setState({
         editModalFlag: false,
@@ -170,12 +181,15 @@ class Event extends Component {
                                 <label>Start Date</label>
                                 <input name='dateFrom'
                                        type="datetime-local"
+                                       defaultValue={this.state.dateFrom}
                                        onChange={(e) => this.updateDateFrom(e)}/>
                             </Form.Field>
+
                             <Form.Field>
                                 <label>End Date</label>
                                 <input name='dateTo'
                                        type="datetime-local"
+                                       defaultValue={this.state.dateTo}
                                        onChange={(e) => this.updateDateTo(e)}/>
                             </Form.Field>
                             <Form.Field>
@@ -238,7 +252,7 @@ class Event extends Component {
                                 <label>Start Date</label>
                                 <input name='dateFrom'
                                        type="datetime-local"
-                                       
+
                                        onChange={(e) => this.updateDateFrom(e)}/>
                             </Form.Field>
                             <Form.Field>
@@ -304,8 +318,26 @@ class Event extends Component {
 
                             <Table.Row key={e.event_id}>
                                 <Table.Cell>{e.eventName}</Table.Cell>
-                                <Table.Cell>{e.eventDateFrom}</Table.Cell>
-                                <Table.Cell>{e.eventDateTo}</Table.Cell>
+                                <Table.Cell>
+                                    {
+                                        new Date(Date.UTC(
+                                            e.eventDateFrom[0],
+                                            e.eventDateFrom[1]-1,
+                                            e.eventDateFrom[2],
+                                            e.eventDateFrom[3],
+                                            e.eventDateFrom[4])).toUTCString()
+                                    }
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {
+                                        new Date(Date.UTC(
+                                            e.eventDateTo[0],
+                                            e.eventDateTo[1]-1,
+                                            e.eventDateTo[2],
+                                            e.eventDateTo[3],
+                                            e.eventDateTo[4])).toUTCString()
+                                    }
+                                </Table.Cell>
                                 <Table.Cell>{e.location}</Table.Cell>
                                 <Table.Cell>{e.eventType}</Table.Cell>
                                 <Table.Cell>
