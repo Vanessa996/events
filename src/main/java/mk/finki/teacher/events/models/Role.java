@@ -14,8 +14,8 @@ public class Role {
     @Column(name = "role")
     private String role;
 
-    @ManyToMany(mappedBy = "roles")
-    private Collection<Teacher> teachers;
+    @OneToOne(mappedBy = "roles")
+    private Teacher teacher;
 
     public Role() {
     }

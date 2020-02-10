@@ -23,12 +23,14 @@ public class Teacher {
     @Column(name = "full_name")
     private String fullName;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "teacher_role",
-            joinColumns = @JoinColumn(name = "teacher_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role> roles;
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "password")
+    private String password;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Role role;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "teacher_event",
@@ -40,6 +42,8 @@ public class Teacher {
 
     public Teacher(String full_name){
         this.fullName = full_name;
+        this.username = full_name.replace(" ", ".").toLowerCase();
+        this.password = full_name.replace(" ", ".").toLowerCase();
     }
 
     public int getTeacher_id() {
@@ -66,11 +70,11 @@ public class Teacher {
         this.events = events;
     }
 
-    public Collection<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
