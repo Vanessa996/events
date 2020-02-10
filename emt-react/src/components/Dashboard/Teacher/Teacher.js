@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {Button, Table, Input} from 'semantic-ui-react'
 import axios from 'axios';
 import {Modal} from "react-bootstrap";
-import { format } from "date-fns";
 
 class Teacher extends Component {
 
@@ -24,34 +23,47 @@ class Teacher extends Component {
     componentDidMount() {
         sessionStorage.setItem("activeIndex", this.state.index);
 
-        axios.get(`http://localhost:8080/teacher`)
-            .then(t => {
-                console.log("data", t.data);
-                if(t.data.length !== 0) {
-                    const teachers = t.data;
-                    let id;
-                    let currentTeacher;
-                    if(sessionStorage["activeEvents"] && sessionStorage["currentTeacher"]){
-                        id = sessionStorage.getItem("activeEvents");
-                        currentTeacher = sessionStorage.getItem("currentTeacher");
-                    }
-                    else{
+        if(this.state.defaultTeacher === "admin" || this.state.defaultTeacher === "default"){
+            axios.get(`http://localhost:8080/teacher`)
+                .then(t => {
+                    console.log("data", t.data);
+                    if (t.data.length !== 0) {
+                        const teachers = t.data;
+                        let id;
+                        let currentTeacher;
+
                         id = teachers[0].teacher_id;
                         currentTeacher = teachers[0].fullName;
                         sessionStorage.setItem("activeEvents", id);
                         sessionStorage.setItem("currentTeacher", currentTeacher);
-                    }
 
-                    console.log("curr", currentTeacher);
-                    this.getEvents(id);
-                    this.setState({
-                        teachers,
-                        activeEvents: id,
-                        currentTeacher,
-                        hasTeachersFlag: true
-                    });
-                }
-            });
+                        console.log("curr", currentTeacher);
+                        this.getEvents(id);
+                        this.setState({
+                            teachers,
+                            activeEvents: id,
+                            currentTeacher,
+                            hasTeachersFlag: true
+                        });
+                    }
+                });
+        }
+        else{
+            axios.get("http://localhost:8080/teacherByName?name=" + sessionStorage.getItem("user")).then(r => {
+                console.log("lame", r.data);
+                let id = r.data.teacher_id;
+                let currentTeacher = r.data.fullName;
+                sessionStorage.setItem("activeEvents", id);
+                sessionStorage.setItem("currentTeacher", currentTeacher);
+                this.getEvents(id);
+                this.setState({
+                    teachers: r.data,
+                    activeEvents: id,
+                    currentTeacher,
+                    hasTeachersFlag: true
+                });
+            })
+        }
         axios.get("http://localhost:8080/events").then(r => {
             this.setState({allEvents: r.data})
         });
@@ -128,7 +140,10 @@ class Teacher extends Component {
     };
 
     loginPage = () => {
-        window.location.replace("/schedule/login");
+        if(sessionStorage.getItem("user") !== "default")
+            window.location.replace("/schedule/dashboard");
+        else
+            window.location.replace("/schedule/login");
     };
 
     render(){
@@ -157,9 +172,8 @@ class Teacher extends Component {
                     </div>
                 }
 
-                {this.state.hasTeachersFlag && this.state.defaultTeacher !== "teacher" &&
+                {this.state.hasTeachersFlag && (this.state.defaultTeacher === "admin" || this.state.defaultTeacher === "default") &&
                 <div className={"col-lg-12 "}>
-                    { this.state.defaultTeacher !== "teacher" &&
                         <div className={"col-lg-3 float-left"}>
                             <Table color={"green"} selectable>
                                 <Table.Header>
@@ -191,11 +205,84 @@ class Teacher extends Component {
                                 </Table.Body>
                             </Table>
                         </div>
-                    }
+
                     <div className={"col-lg-8 float-right"}>
 
+                        {!this.state.eventsEmpty &&
+                        <Table color={"green"}>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                    <Table.HeaderCell>From</Table.HeaderCell>
+                                    <Table.HeaderCell>To</Table.HeaderCell>
+                                    <Table.HeaderCell>Location</Table.HeaderCell>
+                                    <Table.HeaderCell>Type</Table.HeaderCell>
+                                    {!this.state.defaultTeacher && <Table.HeaderCell/>}
+                                </Table.Row>
+                            </Table.Header>
+
+                            <Table.Body>
+                                {
+                                    this.state.events.map((e) => (
+                                        <Table.Row key={e.event_id}>
+                                            <Table.Cell>{e.eventName}</Table.Cell>
+                                            <Table.Cell>
+                                                {
+                                                    new Date(Date.UTC(
+                                                        e.eventDateFrom[0],
+                                                        e.eventDateFrom[1]-1,
+                                                        e.eventDateFrom[2],
+                                                        e.eventDateFrom[3],
+                                                        e.eventDateFrom[4])).toUTCString()
+                                                }
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {
+                                                    new Date(Date.UTC(
+                                                        e.eventDateTo[0],
+                                                        e.eventDateTo[1]-1,
+                                                        e.eventDateTo[2],
+                                                        e.eventDateTo[3],
+                                                        e.eventDateTo[4])).toUTCString()
+                                                }
+                                            </Table.Cell>
+                                            <Table.Cell>{e.location}</Table.Cell>
+                                            <Table.Cell>{e.eventType}</Table.Cell>
+                                            {!this.state.defaultTeacher &&
+                                            <Table.Cell>
+                                                <Button icon={"delete"}
+                                                        compact
+                                                        basic
+                                                        circular
+                                                        color='green'
+                                                        onClick={() => this.removeAnEventToTeacher(e.event_id)}/>
+                                            </Table.Cell>
+                                            }
+                                        </Table.Row>
+                                    ))
+                                }
+                            </Table.Body>
+                        </Table>
+                        }
+
                         {
-                        !this.state.defaultTeacher &&
+                            this.state.eventsEmpty &&
+                            <h2 className={"m-3"}>{this.state.currentTeacher} has no upcoming events.</h2>
+                        }
+                    </div>
+                </div>
+                }
+
+                {!this.state.hasTeachersFlag &&
+                <h2 className={"mx-auto m-3 text-center"}>There are no teachers.</h2>
+                }
+
+                {this.state.defaultTeacher !== "admin" && this.state.defaultTeacher !== "default" &&
+                <div className={"col-lg-12 "}>
+
+                    <div className={"col-lg-8 mx-auto"}>
+
+                        <h1 className={"text-center m-5"}> Welcome {this.state.teachers.fullName}</h1>
                         <div className={"text-center mb-4 col-lg-12"}>
                             <Button circular basic color='green'
                                     content='Add new event'
@@ -282,7 +369,7 @@ class Teacher extends Component {
                                 </Modal.Footer>
                             </Modal>
                         </div>
-                        }
+
                         {!this.state.eventsEmpty &&
                         <Table color={"green"}>
                             <Table.Header>
@@ -292,7 +379,7 @@ class Teacher extends Component {
                                     <Table.HeaderCell>To</Table.HeaderCell>
                                     <Table.HeaderCell>Location</Table.HeaderCell>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
-                                    {!this.state.defaultTeacher && <Table.HeaderCell/>}
+                                    <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
 
@@ -323,16 +410,16 @@ class Teacher extends Component {
                                             </Table.Cell>
                                             <Table.Cell>{e.location}</Table.Cell>
                                             <Table.Cell>{e.eventType}</Table.Cell>
-                                            {!this.state.defaultTeacher &&
+
                                             <Table.Cell>
                                                 <Button icon={"delete"}
                                                         compact
                                                         basic
                                                         circular
-                                                        color='green'
+                                                        color='red'
                                                         onClick={() => this.removeAnEventToTeacher(e.event_id)}/>
                                             </Table.Cell>
-                                            }
+
                                         </Table.Row>
                                     ))
                                 }
@@ -342,14 +429,10 @@ class Teacher extends Component {
 
                         {
                             this.state.eventsEmpty &&
-                            <h2 className={"m-3"}>{this.state.currentTeacher} has no upcoming events.</h2>
+                            <h2 className={"m-3 text-center"}>{this.state.currentTeacher} has no upcoming events.</h2>
                         }
                     </div>
                 </div>
-                }
-
-                {!this.state.hasTeachersFlag && this.state.defaultTeacher !== "teacher" &&
-                <h2 className={"mx-auto m-3 text-center"}>There are no teachers.</h2>
                 }
             </div>);
 

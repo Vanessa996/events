@@ -18,4 +18,6 @@ public interface TeacherService {
     void removeTeacher(int teacher_id) throws TeacherNotFoundException;
     List<Event> getAllEventsByTeacherID(int teacher_id) throws TeacherNotFoundException;
     List<Teacher> getAllTeachers();
+    Teacher getTeacherByName(String name);
 }
+

@@ -1,5 +1,6 @@
 package mk.finki.teacher.events.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import mk.finki.teacher.events.models.enums.EventType;
 
 import javax.persistence.*;
@@ -31,6 +32,9 @@ public class Event {
     @Column(name = "type")
     private EventType eventType;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "events")
+    private List<Teacher> teachers;
 
     public Event(){
     }

@@ -28,6 +28,12 @@ public class TeacherResource {
         return teacherService.getAllTeachers();
     }
 
+    @GetMapping("/teacherByName")
+    public Teacher getTeacherFromId(@RequestParam("name") String name){
+        System.out.println(name);
+        return teacherService.getTeacherByName(name);
+    }
+
     @PostMapping("/teacher/create")
     @ResponseStatus(HttpStatus.CREATED)
     public void addNewTeacher(@RequestParam String name) {

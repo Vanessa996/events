@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -70,5 +71,17 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public List<Teacher> getAllTeachers() {
         return teacherRepository.findAll();
+    }
+
+    @Override
+    public Teacher getTeacherByName(String name){
+        String[] teacherName = name.split(Pattern.quote("."));
+        String first = "";
+        if(teacherName.length > 1)
+            first = teacherName[0].substring(0, 1).toUpperCase() + teacherName[0].substring(1) + " " + teacherName[1].substring(0, 1).toUpperCase() + teacherName[1].substring(1);
+        else
+            first = name.substring(0, 1).toUpperCase() + name.substring(1);
+        System.out.println(first);
+        return teacherRepository.findByFullName(first);
     }
 }
