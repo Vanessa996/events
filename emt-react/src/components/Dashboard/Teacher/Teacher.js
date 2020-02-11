@@ -146,6 +146,12 @@ class Teacher extends Component {
             window.location.replace("/schedule/login");
     };
 
+    removeATeacher = (t) => {
+        axios.delete('http://localhost:8080/teacher/delete/'+t)
+            .then(r => window.location.reload());
+    };
+
+
     render(){
       //  if(sessionStorage["activeEvents"] && sessionStorage["currentTeacher"])
             return (<div className={"col-lg-12 "}>
@@ -191,6 +197,17 @@ class Teacher extends Component {
                                                                className={"table-success"}
                                                                onClick={() => this.changeActiveTeacher(t.teacher_id, t.fullName)}>
                                                         <Table.Cell>{t.fullName}</Table.Cell>
+                                                        {
+                                                            this.state.defaultTeacher === "admin" &&
+                                                            <Table.Cell>
+                                                                <Button icon={"delete"}
+                                                                        compact
+                                                                        basic
+                                                                        circular
+                                                                        color='red'
+                                                                        onClick={() => this.removeATeacher(t.teacher_id)}/>
+                                                            </Table.Cell>
+                                                        }
                                                     </Table.Row>
                                                 );
                                             else
@@ -198,6 +215,17 @@ class Teacher extends Component {
                                                     <Table.Row key={t.teacher_id}
                                                                onClick={() => this.changeActiveTeacher(t.teacher_id, t.fullName)}>
                                                         <Table.Cell>{t.fullName}</Table.Cell>
+                                                        {
+                                                            this.state.defaultTeacher === "admin" &&
+                                                            <Table.Cell>
+                                                                <Button icon={"delete"}
+                                                                        compact
+                                                                        basic
+                                                                        circular
+                                                                        color='red'
+                                                                        onClick={() => this.removeATeacher(t.teacher_id)}/>
+                                                            </Table.Cell>
+                                                        }
                                                     </Table.Row>
                                                 )
                                         })
