@@ -11,6 +11,11 @@ class Login extends Component {
         hasEmptyField: false,
     };
 
+    componentDidMount() {
+        if(sessionStorage.getItem("user") !== "default")
+            window.location.replace("/schedule/dashboard");
+    }
+
     setUsername = (e) => {
         this.setState({username: e.target.value})
     };
@@ -20,7 +25,7 @@ class Login extends Component {
     };
 
     submitLoginInfo = () => {
-        if(this.state.username === "" || this.state.password === ""){
+        if(this.state.username === "" || this.state.password === "" || this.state.username !== this.state.password){
             this.setState({hasEmptyField: true})
         }
         else{

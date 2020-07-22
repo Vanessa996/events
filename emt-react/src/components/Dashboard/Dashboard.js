@@ -17,10 +17,13 @@ const panes = [
 class Dashboard extends Component {
 
     state = {
-        userType: "admin"
+        userType: sessionStorage.getItem("user")
     };
 
     componentDidMount(){
+
+        if(sessionStorage.getItem("user") === "default")
+            window.location.replace("/schedule");
 
         if(sessionStorage.getItem("activeIndex") === null){
             sessionStorage.setItem("activeIndex", '0')
@@ -29,6 +32,7 @@ class Dashboard extends Component {
     }
 
     logoutPage = () => {
+        sessionStorage.setItem("user", "default");
         window.location.replace("/schedule");
     };
 
@@ -55,7 +59,6 @@ class Dashboard extends Component {
             </div>
         );
         else
-        if(this.state.userType === "teacher")
             return(
                 <div className={"col-lg-12 row mt-4 mx-auto"}>
 
@@ -68,7 +71,7 @@ class Dashboard extends Component {
                         />
                     </div>
 
-                    <Teacher schedule = {"teacher"}/>
+                    <Teacher schedule = {sessionStorage.getItem("user")}/>
                 </div>
             );
     }
