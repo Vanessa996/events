@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Form, Input} from "semantic-ui-react";
+import axios from "axios";
 
 
 class Login extends Component {
@@ -28,8 +29,16 @@ class Login extends Component {
             this.setState({hasEmptyField: true})
         }
         else{
-            sessionStorage.setItem("user", this.state.username);
-            window.location.replace("/schedule/dashboard");
+            axios.post('http://localhost:8080/schedule/login/validate',{
+                userName: this.state.username,
+                password: this.state.password
+            },
+                {
+                    'content-type': 'application/json',
+                    'Accept': 'application/json',
+                    'Access-Control-Allow-Credentials':true,
+                    'Access-Control-Allow-Origin':true
+                }).then();
         }
     };
 

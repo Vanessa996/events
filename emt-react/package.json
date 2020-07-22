@@ -17,7 +17,8 @@
     "typescript": "^3.2.1",
     "history": "latest",
     "axios": "latest",
-    "date-fns": "latest"
+    "date-fns": "latest",
+    "express": "latest"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,5 +40,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cors": "^2.8.5"
   }
 }

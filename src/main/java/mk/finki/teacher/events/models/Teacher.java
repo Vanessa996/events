@@ -1,5 +1,7 @@
 package mk.finki.teacher.events.models;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -21,6 +23,15 @@ public class Teacher {
     @Column(name = "full_name")
     private String fullName;
 
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "password")
+    private String password;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Role role;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "teacher_event",
             joinColumns = @JoinColumn(name = "teacher_id"),
@@ -31,6 +42,8 @@ public class Teacher {
 
     public Teacher(String full_name){
         this.fullName = full_name;
+        this.username = full_name.replace(" ", ".").toLowerCase();
+        this.password = full_name.replace(" ", ".").toLowerCase();
     }
 
     public int getTeacher_id() {
@@ -55,5 +68,13 @@ public class Teacher {
 
     public void setEvents(List<Event> events) {
         this.events = events;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

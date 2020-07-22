@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 public class EventResource {
 
